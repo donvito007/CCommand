@@ -1,371 +1,217 @@
-# AdbCommand
-Adb各种实用命令收集
+#AdbCommand
+Collection of various practical commands of Adb
 
-若连接多台使用adb -s操作。
-windows下使用findstr，linux和mac下使用grep。
+If you connect multiple devices, use adb -s to operate.
+Use findstr under windows, and grep under linux and mac.
 
-通过无线连接ADB:
-- 插上手机输入命令：adb tcpip 5555
-- 输入连接命令：adb connect 172.16.7.204:5555
+Connect to ADB via wireless:
+- Plug in the phone and enter the command: adb tcpip 5555
+- Enter the connection command: adb connect 172.16.7.204:5555
 
-以root方式执行shell命令：
-- 先执行adb root
+Execute shell commands as root:
+- Execute adb root first
 
-`Read-only file system`时以可读写方式执行:
+When `Read-only file system` is executed as readable and writable:
 - adb remount
 
 
-如果结果太长可以保存到文件中，如：   
-- `>`新建或覆盖文件保存：`adb shell pm list packages > installed_package.txt`   
-- `>>`往文件中追加结果： `adb shell pm list packages >> installed_package.txt`   
+If the result is too long, it can be saved to a file, such as:
+- `>` New or overwrite file save: `adb shell pm list packages > installed_package.txt`
+- `>>`appends the result to the file: `adb shell pm list packages >> installed_package.txt`
  
 
-## 设备连接操作：
-### adb关闭：
+## Device connection operation:
+### adb shutdown:
 adb kill-server
 
-### adb开启：
+### adb open:
 adb start-server
 
-### adb设备查看：
+### adb device view:
 adb devices
 
-### adb查看手机网络
+### adb view mobile network
 adb shell ifconfig wlan0
 
-### 从电脑上传文件到手机上：
+### Upload files from computer to phone:
 adb push /Users/caochang/apk/BBox.apk /sdcard/xbd/BBox.apk
 
-### 从手机上发送文件到电脑上：
+### Send files from phone to computer:
 adb pull /sdcard/xbd/BBox.apk /Users/caochang/apk/BBox.apk
 
 
-## 获取系统参数：
-### 输出设备信息到文件：
+## Get system parameters:
+### Output device information to a file:
 adb shell getprop > info.txt
 
-### 获取IMEI：
+### Get IMEI:
 adb shell dumpsys iphonesubinfo
 
-### 获取手机品牌：
+### Get the phone brand:
 adb shell getprop ro.product.brand
 
-### 获取手机型号：
+### Get the phone model:
 adb shell getprop ro.product.model
 
-### 获取手机系统SDK版本号：
+### Get the SDK version number of the mobile phone system:
 adb shell getprop ro.build.version.sdk
 
-### 获取Android系统版本号：
+### Get the Android system version number:
 adb shell getprop ro.build.version.release
 
-### 获取手机分辨率：
+### Get phone resolution:
 adb shell wm size
 
-### 修改手机分辨率：
+### Modify the phone resolution:
 adb shell wm size 1080*1920
 
-### 获取手机dpi：
-adb shell wm density 
+### Get the phone dpi:
+adb shell wm density
 
-### 修改手机dpi：
+### Modify the phone dpi:
 adb shell wm density 480
 
-### 获取手机cpu架构：
-adb shell getprop ro.product.cpu.abilist(Android5.0系统之后)    
-adb shell getprop ro.product.cpu.abi(Android5.0系统之前)
+### Get the mobile phone cpu architecture:
+adb shell getprop ro.product.cpu.abilist (after Android5.0 system)
+adb shell getprop ro.product.cpu.abi (before Android5.0 system)
 
-### 获取手机mac：
-adb shell cat /sys/class/net/eth0/address(网卡一)   
-adb shell cat /sys/class/net/wlan0/address(无线网卡)   
+### Get the phone mac:
+adb shell cat /sys/class/net/eth0/address (network card one)
+adb shell cat /sys/class/net/wlan0/address (wireless network card)
 
-### 获取deviceId：
-adb shell settings get secure android_id   
+### Get deviceId:
+adb shell settings get secure android_id
 adb shell content query --uri content://settings/secure/android_id --projection value
 
-### 查看系统支持的编解码器：
-adb shell system/etc/media_codecs.xml       
-adb shell cat /etc/media_codecs.xml | grep -i "hevc"(查看是否支持h265)   
+### View the codecs supported by the system:
+adb shell system /etc/media_codecs.xml
+adb shell cat /etc/media_codecs.xml | grep -i "hevc" (check if h265 is supported)
 
 
-## 系统设置相关：
-### 获取屏幕休眠时间：
+## System settings related:
+### Get the screen sleep time:
 adb shell settings get system screen_off_timeout
 
-### 设置屏幕休眠时间(ms)：
+### Set the screen sleep time (ms):
 adb shell settings put system screen_off_timeout 60000
 
-### 查看默认短信应用：
+### View the default SMS application:
 adb shell settings get secure sms_default_application
 
-### 修改默认短信应用：
+### Modify the default SMS application:
 adb shell settings put secure sms_default_application com.carlos.sms
 
-### 获取屏幕熄灭状态：
+### Get the screen off status:
 adb shell "dumpsys window policy | grep mScreenOnFully"
 <br>
 adb shell dumpsys power | findstr "Display Power:state="
 
-### 查看系统属性
-adb shell cat /system/build.prop     
-`heapgrowthlimit`:普通应用内存限制，对应`ActivityManager.getMemoryClass()`方法获取的值       
-`heapsize`:`manifest`中设置了`largeHeap=true`之后，可以使用的最大内存值，对应`ActivityManager.getLargeMemoryClass()`方法获取的值  
+### View system properties
+adb shell cat /system/build.prop
+`heapgrowthlimit`: Common application memory limit, corresponding to the value obtained by the `ActivityManager.getMemoryClass()` method
+`heapsize`: After `largeHeap=true` is set in `manifest`, the maximum memory value that can be used, corresponding to the value obtained by `ActivityManager.getLargeMemoryClass()` method
 
-### 查看系统虚拟机类型
-adb shell getprop persist.sys.dalvik.vm.lib   
-若值为libdvm.so则为dalvik，libart.so则为art
+### View system virtual machine type
+adb shell getprop persist.sys.dalvik.vm.lib
+If the value is libdvm.so, it is dalvik, and libart.so is art
 
-### 查看设置相关属性
-Android4.4目录下，相关路径`data/data/com.android.providers.settings/databases/settings.db`，可以打开数据库查看   
-Android7.x目录下，相关路径`data/system/users/0`，路径下`settings_secure.xml`、`settings_system.xml`、`settings_global.xml`文件   
-获取值   
+### View and set related properties
+Under the Android4.4 directory, the relevant path `data/data/com.android.providers.settings/databases/settings.db`, you can open the database to view
+Under the Android7.x directory, the relevant path `data/system/users/0`, `settings_secure.xml`, `settings_system.xml`, `settings_global.xml` files under the path
+get value
 ```
-adb shell settings get system [key]   
-adb shell settings get global [key]   
-adb shell settings get secure [key]   
+adb shell settings get system [key]
+adb shell settings get global [key]
+adb shell settings get secure [key]
 ```
-设置值
+Settings
 ```
-adb shell settings put secure [key] [value]   
+adb shell settings put secure [key] [value]
 ...
 ```
-如，获取定义按转为长按之前的默认持续时间（毫秒）：`adb shell settings get secure long_press_timeout`
+For example, get the default duration (in milliseconds) before the defined press turns into a long press: `adb shell settings get secure long_press_timeout`
 
 
-## 性能相关：
-### 冷热启动耗时时间：
+## Performance related:
+### Time-consuming hot and cold start:
 ```
-adb shell am start      
-    -W: wait for launch to complete    
-    -S: force stop the target app before starting the activity 
+adb shell am start
+     -W: wait for launch to complete
+     -S: force stop the target app before starting the activity
 ```
-例`adb shell am start -W com.UCMobile/com.uc.browser.InnerUCMobile`  
-在AS中可过滤`displayed`输出的启动日志
+Example `adb shell am start -W com.UCMobile/com.uc.browser.InnerUCMobile`
+Filterable startup log for `displayed` output in AS
 
-### 应用cpu占用率：
-adb shell dumpsys cpuinfo| find "com.sec.android.app.launcher"
+### Application cpu usage:
+adb shell dumpsys cpuinfo | find "com.sec.android.app.launcher"
 
-### 应用memory：
+### Application memory:
 adb shell "dumpsys meminfo | grep com.carlos.bbox
 
-### 通过包名获取pid：
+### Get pid by package name:
 adb shell "ps | grep com.aspire.agent"
-得到结果第二列的值为pid
-### 通过pid获取uid：
+The value of the second column of the result is pid
+### Get uid by pid:
 adb shell cat /proc/6094/status
 
-### 通过uid获取上行流量：
+### Obtain uplink traffic through uid:
 adb shell "cat /proc/uid_stat/10189/tcp_snd"
 
-### 通过uid获取下行流量：
+### Obtain downlink traffic through uid:
 adb shell "cat /proc/uid_stat/11110/tcp_rcv"
 
-### 导出crash日志：
+### Export crash log:
 adb shell dumpsys dropbox --print >>crashlog_$(date +%Y%m%d%H%M).txt
 
-### 查看meminfo内容
+### View meminfo content
 adb shell cat /proc/meminfo
 
-### 通过pid模拟杀进程
+### Simulate killing process by pid
 adb shell kill -9 6094
 
-## 应用相关：
-### 显示已安装应用：
+## Application related:
+### Show installed apps:
 adb shell pm list packages [-com.carlos.bbox]
-### 清除应用数据：
+### Clear application data:
 adb shell pm clear com.carlos.bbox
-### 卸载应用：
+### Uninstall the app:
 adb uninstall com.carlos.bbox
-### 卸载系统应用
+### Uninstall system apps
 adb shell pm uninstall -k --user 0 com.carlos.test
-### 显式安装应用：
-adb install (-r强制安装) /Users/caochang/apk/BBox.apk
-### 隐式安装应用：
+### Explicitly install the application:
+adb install (-r force installation) /Users/caochang/apk/BBox.apk
+### Install apps implicitly:
 adb shell pm install (-r) /sdcard/xbd/BBox.apk
-### 无弹框安装应用：
+### Install the application without pop-up box:
 adb install-multiple -r /Users/caochang/apk/BBox.apk
-### 发送广播：
+### Send broadcast:
 adb shell am broadcast -a com.carlos.bbox -e port 8888
-### 启动服务：
-adb shell am startservice com.carlos.bbox/com.carlos.bbox.MyService 
-### 启动应用：
-adb shell am start -n com.carlos.bbox/.MainActivity   
-启动带参数:
+### Start the service:
+adb shell am startservice com.carlos.bbox/com.carlos.bbox.MyService
+### Start the application:
+adb shell am start -n com.carlos.bbox/.MainActivity
+Start with parameters:
 ```
--a action；activity对应的action；
---es key stringValue; 传递 String 参数;
---ez key booleanValue; 传递 Boolean 参数；
---ei key intValue; 传递 int 参数；
---el key longValue; 传递 long 参数；
---ef key floatValue; 传递 float 参数；
+-a action; the action corresponding to the activity;
+--es key stringValue; pass String parameter;
+--ez key booleanValue; pass Boolean parameter;
+--ei key intValue; pass int parameter;
+--el key longValue; pass long parameter;
+--ef key floatValue; pass float parameter;
 ```
 
-### 停止应用：
+### Stop the application:
 adb shell am froce-stop com.carlos.bbox
-### 查看顶层Activity类名：
-- 8.0以下命令
+### View the top-level Activity class name:
+- Commands below 8.0
 adb shell dumpsys activity | grep "mFocusedActivity"
-- 8.0以上命令
+- Commands above 8.0
 adb shell dumpsys activity | grep "mResumedActivity"
-### 查看当前界面的信息
+### View the information of the current interface
 adb shell dumpsys window | grep mCurrentFocus
 
-### Activity信息和View Hierarchy：   
-adb shell dumpsys activity top   
-### 查看是否已安装该应用
+### Activity information and View Hierarchy:
+adb shell dumpsys activity top
+### Check if the app is installed
 adb sehll pm list packages | grep "com.carlos.test"
-### 查看已经安装的包名对应的apk路径：
-adb shell pm path com.carlos.grabredenvelope
-### 导出已安装的APK：
-adb pull /data/app/com.example.carlos.myapplication--y9EFnP-__j34XhQxIwXvA==/base.apk（找到的apk路径)
-### 当前栈顶的Activity信息输出到文件
-adb shell dumpsys activity top > info.txt
-
-## Monkey相关：
-### 点击应用1000次：
-adb shell monkey -p com.codemao.dan -v 1000
-### 每隔1s点一次：
-adb shell monkey -p com.codemao.dan --throttle 1000 20
-
-## 操控手机相关：
-### 点击坐标点：
-adb shell input tap 250 250
-### 输入文本
-adb shell input text hello world
-
-### 截图：
-adb shell screencap -p /sdcard/a.png
-
-### 录屏
-adb shell screenrecord /sdcard/test.mp4
-
-## 调试相关
-### 日志
-#### 输出日志
-adb logcat -v time > log.txt
-#### 清空日志
-adb logcat -c
-
-### TV抓包
-Charles抓包，针对Lancher未提供设置网络代理和打开浏览器功能，使用adb来打开原生设置网络代理安装证书
-- 启动设置
-```
-adb shell am start com.android.settings/com.android.settings.Settings
-```
-- 连接网络，输入代理，TV按键操作打字不方便，可以用adb，如：
-```
-adb shell input text 172.17.5.166
-```
-- 代理设置好后打开浏览器
-```
-adb shell am start com.android.browser/com.android.browser.BrowserActivity
-```
-- 输入`chls.pro/ssl`安装证书
-```
-adb shell input text chls.pro/ssl
-```
-
-找到了更加快捷的做法,直接adb设置代理,如:
-```
-adb shell settings put global http_proxy 127.0.0.1:8888
-```
-adb清除代理:
-```
-adb shell settings put global http_proxy :0
-```
-[Charles清除代理三种方式](https://blog.csdn.net/cpcpcp123/article/details/103978801)
-
-### TV抓包
-模拟按键上下
-```
-adb shell input keyevent KEYCODE_DPAD_UP
-adb shell input keyevent KEYCODE_DPAD_DOWN
-```
-### 开发者选项
-#### 打开/关闭布局边界
-```
-adb shell setprop debug.layout true 
-adb shell setprop debug.layout false 
-```
-
-### View Server
-#### 查看是否开启命令：
-adb shell service call window 3<br>
-返回值是：Result: Parcel(00000000 00000000 '........')" 说明View Server处于关闭状态<br>
-返回值是：Result: Parcel(00000000 00000001 '........')" 说明View Server处于开启状态
-#### 打开View Server：
-adb shell service call window 1 i32 4939
-#### 关闭View Server：
-adb shell service call window 2 i32 4939
-
-
-
-## Android工程模式拨号指令
-### 进入工程模式选项
-- *#*#2846579#*#*
-- *#*#6484#*#*
-- *#*#6130#*#*
-- *#*#4636#*#*
-- *#*#14789632#*#*
-- *#*#1673495#*#*
-
-### 查看设备信息
-#### 查询手机串号（IMEI）
-*#06#
-
-### 其他
-首先进入操作系统的拨号界面，输入指令码即可快速进入Android的工程测试模式。
-
-常见机型进入工程模式的指令码是：
-
-- 华为：*#*#121314#*#*。
-- 努比亚：*#8604#。
-- 魅族：*#*#3646633#*#*。
-- 小米：*#*#6484#*#* 或 *#*#64663#*#*。
-- 三星：*#0*#、HTC：*#*#3424#*#*。
-- 联想：####1111#。
-- 中兴：*983*3640#。
-- 索尼：*#*#7378423#*#*。
-- vivo：*#558#。
-- OPPO：*#800#。
-- 一加：*#36446337#。
-- 乐视：*#*#3646633#*#*。
-- ZUK：*#*#1111#*#*。
-- Moto：*#*#372#*#*。
-- LG：3485#*手机型号#。
-- 酷派：*20060606#。
-- 360手机：*20121220#。
-
-## 各种手机日志开启方法
-- vivo：拨号键盘输入*#*#112#*#*，Log开关——开
-- 华为：拨号键盘输入*#*#2846579#*#*，后台设置——AP LOG设置——打开
-
-## 其他
-### 列举可以被调试的pid(进程id)
-adb jdwp
-
-- [android之JDWP调试使用](https://blog.csdn.net/cigogo/article/details/87453793)
-
-### 通过脚本下载Android源码
-- [在Windows系统里下载Android源码](https://www.jianshu.com/p/6a74190110d9)   
-可结合`Source Insight`阅读源码
-
-## 其他问题
-### adb pull data/data下文件失败
-在某些手机上进入到package文件夹下执行ls命令会出现以下问题,参考链接：[opendir failed, Permission denied](https://www.jianshu.com/p/359780457fa2?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation)
-```
-opendir failed, Permission denied
-```
-此时，可先run-as your-package命令，如
-```
-run-as com.carlos.test
-```
-### adb pull data/anr失败
-```
- remote open failed: Permission denied
-```
-可用adb bugreport命令在当前路径下生成压缩包分析，参考链接:[调试系列2：bugreport实战篇](https://www.jianshu.com/p/1ada78f09336)
-
-### adb端口占用
-- 然后查找5037端口：lsof -i tcp:5037
-- .杀掉这个进程：kill 1019
+### View the a corresponding to the installed package name
